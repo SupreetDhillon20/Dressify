@@ -51,4 +51,3 @@ model Wishlist {
   user       User     @relation(fields: [userId], references: [id])
 }
 
-npx prisma generate
