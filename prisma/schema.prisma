@@ -28,25 +28,42 @@ model Product {
   image       String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  orders      Order[]   @relation("ProductOrders")
-  wishlists   Wishlist[] @relation("ProductWishlists")
+  orderItems  OrderItem[]
+  wishlistItems WishlistItem[]
 }
 
 model Order {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   userId     String
-  products   Product[] @relation("ProductOrders")
   total      Float
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   user       User     @relation(fields: [userId], references: [id])
+  items      OrderItem[]
 }
 
 model Wishlist {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   userId     String
-  products   Product[] @relation("ProductWishlists")
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   user       User      @relation(fields: [userId], references: [id])
+  items      WishlistItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId   String
+  productId String
+  quantity  Int
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+model WishlistItem {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  wishlistId String
+  productId  String
+  wishlist   Wishlist @relation(fields: [wishlistId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id])
 }
