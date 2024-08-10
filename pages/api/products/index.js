@@ -1,17 +1,30 @@
-export default function handler(req, res) {
-  const products = [
-    { id: 1, name: 'Product 1', description: 'Description for product 1', price: 100, image: '/images/product1.jpg' },
-    { id: 2, name: 'Product 2', description: 'Description for product 2', price: 150, image: '/images/product2.jpg' },
-    { id: 3, name: 'Product 3', description: 'Description for product 3', price: 200, image: '/images/product3.jpg' },
-    // Add more products as needed
-  ];
+// pages/api/products/index.js
+import { createProduct, getProducts } from '../../../prisma/operations';
 
-  const page = parseInt(req.query.page) || 1;
-  const pageSize = 3; // Number of products per page
-  const totalProducts = products.length;
-  const totalPages = Math.ceil(totalProducts / pageSize);
-  const paginatedProducts = products.slice((page - 1) * pageSize, page * pageSize);
+export default async function handler(req, res) {
+  if (req.method === 'POST') {
+    try {
+      const product = await createProduct(req.body);
+      res.status(201).json(product);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to create product' });
+    }
+  } else if (req.method === 'GET') {
+    try {
+      const allProducts = await getProducts();
+      
+      // Implement pagination logic
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = 10; // Number of products per page
+      const totalProducts = allProducts.length;
+      const totalPages = Math.ceil(totalProducts / pageSize);
+      const paginatedProducts = allProducts.slice((page - 1) * pageSize, page * pageSize);
 
-  res.status(200).json({ products: paginatedProducts, totalPages });
+      res.status(200).json({ products: paginatedProducts, totalPages });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch products' });
+    }
+  } else {
+    res.status(405).json({ message: 'Method not allowed' });
+  }
 }
-
