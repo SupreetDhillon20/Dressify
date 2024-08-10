@@ -7,8 +7,12 @@ export default function Home() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
+    // Fetch products from the API
     axios.get('/api/products')
-      .then(response => setProducts(response.data.products.slice(0, 3)))
+      .then(response => {
+        // Set the products state with the first 3 products for featured display
+        setProducts(response.data.products.slice(0, 3));
+      })
       .catch(error => console.error('Error fetching products:', error));
   }, []);
 
