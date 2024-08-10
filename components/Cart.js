@@ -1,6 +1,37 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { StoreContext } from '../context/StoreContext';
+import axios from 'axios';
 
-const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
+const Cart = () => {
+  const { state, dispatch } = useContext(StoreContext);
+  const cartItems = state.cart;
+
+  const removeFromCart = async (id) => {
+    try {
+      // Optionally, persist the remove action to the backend
+      await axios.delete(`/api/cart/${id}`);
+
+      // Update the local state
+      dispatch({ type: 'REMOVE_FROM_CART', payload: { id } });
+    } catch (error) {
+      console.error('Failed to remove item from cart:', error);
+    }
+  };
+
+  const updateQuantity = async (id, quantity) => {
+    if (quantity < 1) return; // Prevents setting quantity below 1
+
+    try {
+      // Optionally, persist the quantity update to the backend
+      await axios.put(`/api/cart/${id}`, { quantity });
+
+      // Update the local state
+      dispatch({ type: 'UPDATE_CART_QUANTITY', payload: { id, quantity } });
+    } catch (error) {
+      console.error('Failed to update quantity:', error);
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Shopping Cart</h1>
@@ -20,7 +51,7 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
               <input
                 type="number"
                 value={item.quantity}
-                onChange={(e) => updateQuantity(item.id, e.target.value)}
+                onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
                 className="w-16 text-center border rounded-md"
               />
               <button
@@ -38,4 +69,3 @@ const Cart = ({ cartItems, removeFromCart, updateQuantity }) => {
 };
 
 export default Cart;
-
