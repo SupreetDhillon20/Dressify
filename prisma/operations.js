@@ -1,4 +1,5 @@
 // prisma/operations.js
+import * as yup from 'yup';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
