@@ -10,8 +10,8 @@ export default function Home() {
     // Fetch products from the API
     axios.get('/api/products')
       .then(response => {
-        // Set the products state with the first 3 products for featured display
-        setProducts(response.data.products.slice(0, 3));
+        // Set the products state with the first 10 products for featured display
+        setProducts(response.data.products);
       })
       .catch(error => console.error('Error fetching products:', error));
   }, []);
