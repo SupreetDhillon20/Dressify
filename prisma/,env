@@ -1,0 +1,1 @@
+DATABASE_URL="mongodb+srv://Dressify:Assignment3@cluster.mongodb.net/dressify?retryWrites=true&w=majority"
