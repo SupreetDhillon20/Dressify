@@ -1,17 +1,51 @@
-export default function handler(req, res) {
-  const { id } = req.query;
-  const products = [
-    { id: 1, name: 'Product 1', description: 'Description for product 1', price: 100, image: '/images/product1.jpg' },
-    { id: 2, name: 'Product 2', description: 'Description for product 2', price: 150, image: '/images/product2.jpg' },
-    { id: 3, name: 'Product 3', description: 'Description for product 3', price: 200, image: '/images/product3.jpg' },
-    // Add more products as needed
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import axios from 'axios';
+import ImageGallery from 'react-image-gallery';
+import "react-image-gallery/styles/css/image-gallery.css";
+
+const ProductDetails = () => {
+  const [product, setProduct] = useState(null);
+  const router = useRouter();
+  const { id } = router.query;
+
+  useEffect(() => {
+    if (id) {
+      axios.get(`/api/products/${id}`)
+        .then(response => {
+          setProduct(response.data);
+        })
+        .catch(error => console.error('Error fetching product details:', error));
+    }
+  }, [id]);
+
+  if (!product) return <div>Loading...</div>;
+
+  const images = [
+    {
+      original: product.image,
+      thumbnail: product.image,
+    },
+    // Add more images here if available
   ];
 
-  const product = products.find(p => p.id === parseInt(id));
-  if (product) {
-    res.status(200).json(product);
-  } else {
-    res.status(404).json({ message: 'Product not found' });
-  }
-}
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-6">{product.name}</h1>
+      <div className="flex flex-col md:flex-row">
+        <div className="w-full md:w-1/2">
+          <ImageGallery items={images} />
+        </div>
+        <div className="w-full md:w-1/2 md:ml-6">
+          <p className="text-gray-700 text-lg mb-4">{product.description}</p>
+          <p className="text-2xl font-bold text-blue-500 mb-6">${product.price}</p>
+          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
+export default ProductDetails;
