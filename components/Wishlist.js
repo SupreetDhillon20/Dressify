@@ -1,7 +1,23 @@
-// components/Wishlist.js
-import React from 'react';
+import React, { useContext } from 'react';
+import { StoreContext } from '../context/StoreContext';
+import axios from 'axios';
 
-const Wishlist = ({ wishlistItems, removeFromWishlist }) => {
+const Wishlist = () => {
+  const { state, dispatch } = useContext(StoreContext);
+  const wishlistItems = state.wishlist;
+
+  const removeFromWishlist = async (id) => {
+    try {
+      // Optionally, persist the remove action to the backend
+      await axios.delete(`/api/wishlist/${id}`);
+
+      // Update the local state
+      dispatch({ type: 'REMOVE_FROM_WISHLIST', payload: { id } });
+    } catch (error) {
+      console.error('Failed to remove item from wishlist:', error);
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Wishlist</h1>
@@ -31,4 +47,3 @@ const Wishlist = ({ wishlistItems, removeFromWishlist }) => {
 };
 
 export default Wishlist;
-
